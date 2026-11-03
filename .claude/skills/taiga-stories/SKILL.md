@@ -26,10 +26,10 @@ Each story is one `.md` file in `stories/`, following [story-template.md](story-
   For bug fixes, use `Fix — <what was happening>`.
 - **Header:** `**Project:**`, `**Branch:**`, `**Version:**`, `**Date:**` and `**Points:**`,
   one per line.
-- **Points:** there is no default. **Before saving a new story to `stories/`, ask the user
-  its points** and write them in `**Points:**` (`**Pontos:**` in Portuguese). The value must
-  be a name in the project's point scale (e.g. 1, 2, 3, 5, 8, 13, 21). When writing several
-  stories, ask for all of them in one message, listing them by title.
+- **Points:** there is no default. **Before saving a new story to `stories/`, estimate its
+  points with the `story-points` skill** (commit history of `CODE_REPO_PATH`) and have the
+  user confirm them. Write the value in `**Points:**` (`**Pontos:**` in Portuguese). It must
+  be a name in the project's point scale (1, 2, 3, 5, 8, 13, 21).
 - **Sections, in this order:** `## User story` (**As** / **I want** / **so that**, each bold
   on its own line), `## Description` (prose for the product owner, no code jargon),
   `## Acceptance criteria` (`- [ ]` checklist, `[x]` for what is done and tested),
@@ -75,9 +75,10 @@ Use AskUserQuestion, or a plain question if it is unavailable. Do not reuse earl
    `localStorage.getItem("token")`. Use it only as an inline environment variable for
    the command. Never write it to `.env` or to any file.
 3. **Missing points:** if any story to upload has no `**Points:**` (the `--dry-run` shows
-   `MISSING`), ask the points of those stories, listing them by title. Write each answer
-   to the story's `**Points:**` line (`**Pontos:**` in Portuguese), right after
-   `**Date:**` / `**Período:**`. Stories that already have points are not asked again.
+   `MISSING`), estimate those with the `story-points` skill and have the user confirm,
+   listing them by title. Write each value to the story's `**Points:**` line
+   (`**Pontos:**` in Portuguese), right after `**Date:**` / `**Período:**`. Stories that
+   already have points are not estimated again.
    The upload stops before creating anything while any story lacks a valid value.
 
 If `.env` is missing, also ask for the Taiga project link and create `.env` from

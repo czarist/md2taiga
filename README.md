@@ -62,7 +62,7 @@ stories/automatic-slug.md  ──►  Taiga user story #575  (21 pts · assigned
 | Indented lines below a task         | Task description       |
 
 - **Assignee.** The token owner, on the story and on every task.
-- **Points.** The story's `**Points:**` header field, on the project's computable role. There is no default: a story without points is not uploaded. With Claude Code, the agent asks the points when it writes each story, and again before uploading if any are missing.
+- **Points.** The story's `**Points:**` header field, on the project's computable role. There is no default: a story without points is not uploaded. With Claude Code, the `story-points` skill estimates them from the code repository's commits and you confirm.
 - **Status.** The project defaults.
 
 ## Quick start
@@ -161,19 +161,23 @@ The repository ships the skill [`.claude/skills/taiga-stories`](.claude/skills/t
 >
 > Upload the new stories to Taiga.
 
-The agent writes the story in the standard format and in the language of the request, then validates it. Before each upload, it asks in the chat for the destination (a sprint or the backlog) for the session token and for the points of each story.
+The agent writes the story in the standard format and in the language of the request, then validates it. Before saving a story it estimates its points from the commits of `CODE_REPO_PATH` (1, 2, 3, 5, 8, 13, 21) and asks you to confirm. Before each upload, it asks in the chat for the destination (a sprint or the backlog) and for the session token.
 
 ## Layout
 
 ```text
 .
-├── AGENTS.md                         rules for coding agents
-├── .env.example                      configuration template
-├── stories/                          your stories (*.md is git-ignored)
-└── .claude/skills/taiga-stories/
-    ├── SKILL.md                      writing rules, upload steps, lessons learned
-    ├── story-template.md
-    └── scripts/taiga_stories.py      validate · upload
+├── AGENTS.md                             rules for coding agents
+├── .env.example                          configuration template
+├── stories/                              your stories (*.md is git-ignored)
+└── .claude/skills/
+    ├── taiga-stories/
+    │   ├── SKILL.md                      writing rules, upload steps, lessons learned
+    │   ├── story-template.md
+    │   └── scripts/taiga_stories.py      validate · upload
+    └── story-points/
+        ├── SKILL.md                      estimation rules (1, 2, 3, 5, 8, 13, 21)
+        └── scripts/estimate_points.py    suggests points from the code repo's commits
 ```
 
 Story files are git-ignored by default, because they often describe internal systems. Remove `stories/*.md` from `.gitignore` to version them.
