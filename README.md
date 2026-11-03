@@ -13,7 +13,7 @@
   <a href=".claude/skills/taiga-stories/story-template.md"><img alt="Format: Markdown" src="https://img.shields.io/badge/format-Markdown-000000?style=flat-square&logo=markdown&logoColor=white"></a>
   <a href=".claude/skills/taiga-stories/SKILL.md"><img alt="Agent: Claude Code skill" src="https://img.shields.io/badge/agent-Claude%20Code-D97757?style=flat-square&logo=claude&logoColor=white"></a>
   <img alt="Dependencies: none" src="https://img.shields.io/badge/deps-none-6BA539?style=flat-square">
-  <img alt="CLI: validate and upload, version 0.1.0" src="https://img.shields.io/badge/CLI-validate%20%C2%B7%20upload%20%C2%B7%200.1.0-111111?style=flat-square">
+  <img alt="CLI: validate and upload, version 0.3.0" src="https://img.shields.io/badge/CLI-validate%20%C2%B7%20upload%20%C2%B7%200.3.0-111111?style=flat-square">
 </p>
 
 <br>
@@ -26,7 +26,9 @@
   <a href="#story-format">Story format</a> ·
   <a href="#with-claude-code">Claude Code</a> ·
   <a href="#layout">Layout</a> ·
-  <a href="#troubleshooting">Troubleshooting</a>
+  <a href="#troubleshooting">Troubleshooting</a> ·
+  <a href="CHANGELOG.md">Changelog</a> ·
+  <a href="ROADMAP.md">Roadmap</a>
 </p>
 
 <br>
@@ -168,6 +170,8 @@ The agent writes the story in the standard format and in the language of the req
 ```text
 .
 ├── AGENTS.md                             rules for coding agents
+├── CHANGELOG.md                          what changed in each version
+├── ROADMAP.md                            what is done and what comes next
 ├── .env.example                          configuration template
 ├── stories/                              your stories (*.md is git-ignored)
 └── .claude/skills/
