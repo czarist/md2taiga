@@ -13,7 +13,7 @@ tooling works for any Taiga project, which is configured in `.env`.
 
 1. Copy `.env.example` to `.env` at the repository root and set `TAIGA_PROJECT_URL`
    to the project link, e.g. `https://taiga.example.com/project/my-project`.
-2. Optionally set `TAIGA_POINTS` (point value per story, empty = none) and
+2. Optionally set `TAIGA_POINTS` (default point value when a story has no `**Points:**`, empty = none) and
    `STORIES_DIR` (default `stories`).
 
 `.env` holds no secrets and is ignored by git. The token **never** goes in it.
@@ -40,7 +40,7 @@ Each story is one `.md` file in `stories/`, following [story-template.md](story-
   | English | Portuguese |
   |---|---|
   | `# Story:` | `# História:` |
-  | `**Project:**` / `**Branch:**` / `**Version:**` / `**Date:**` | `**Projeto:**` / `**Branch:**` / `**Versão:**` / `**Período:**` |
+  | `**Project:**` / `**Branch:**` / `**Version:**` / `**Date:**` / `**Points:**` | `**Projeto:**` / `**Branch:**` / `**Versão:**` / `**Período:**` / `**Pontos:**` |
   | `## User story` (**As** / **I want** / **so that**) | `## História de usuário` (**Como** / **quero** / **para**) |
   | `## Description` | `## Descrição` |
   | `## Acceptance criteria` | `## Critérios de aceite` |
@@ -69,6 +69,13 @@ Use AskUserQuestion, or a plain question if it is unavailable. Do not reuse earl
 2. **Session token:** in the open Taiga tab, F12 > Console >
    `localStorage.getItem("token")`. Use it only as an inline environment variable for
    the command. Never write it to `.env` or to any file.
+3. **Points of each story:** list the stories that will be uploaded by title, suggesting
+   the current `**Points:**` value (or `TAIGA_POINTS`), and ask for each one. With many
+   stories, one message with the whole list is fine ("reply with the changes, the rest
+   keep the suggestion"). Write each answer to the story's `**Points:**` header line
+   (`**Pontos:**` in Portuguese), adding the line after `**Date:**` / `**Período:**` if it
+   is missing. The value must be a name in the project's point scale. The upload stops
+   before creating anything if one is not.
 
 If `.env` is missing, also ask for the Taiga project link and create `.env` from
 `.env.example`.
@@ -87,7 +94,8 @@ stories and tasks were created, plus any texts the script rewrote (and any task 
 description was dropped).
 
 Defaults: the token owner is the assignee of stories and tasks, statuses are the project
-defaults, and points come from `TAIGA_POINTS` on the project's computable role.
+defaults, and points come from each story's `**Points:**` field (else `TAIGA_POINTS`) on
+the project's computable role.
 
 The script:
 - skips stories whose **title already exists in the project**. Use `--force` only if the

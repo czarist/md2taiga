@@ -4,6 +4,7 @@
 **Branch:** `feature/<name>`
 **Version:** <x.y.z>
 **Date:** <dd/mm/yyyy>
+**Points:** <value from the project's point scale — asked before each upload>
 
 ## User story
 

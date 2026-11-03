@@ -31,6 +31,10 @@ Follow "Uploading to Taiga" in `SKILL.md`. Key rules:
 
 - **Every upload**, ask the user in the chat for the destination (sprint name or backlog)
   and the session token. Do not reuse answers from earlier uploads.
+- **Ask the points of each story** being uploaded, listing them by title, with the
+  value from `**Points:**` (or `TAIGA_POINTS`) as the suggested default. Write each answer
+  to the story's `**Points:**` header field (`**Pontos:**` in Portuguese stories) before
+  uploading. The value must exist in the project's point scale (e.g. 1, 2, 3, 5, 8, 13, 21).
 - **Never** write the token to `.env` or to any file in the repository. Pass it as an
   inline `TAIGA_TOKEN` environment variable.
 - Always run `--dry-run` first.
