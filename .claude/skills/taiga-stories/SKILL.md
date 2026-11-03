@@ -13,8 +13,7 @@ tooling works for any Taiga project, which is configured in `.env`.
 
 1. Copy `.env.example` to `.env` at the repository root and set `TAIGA_PROJECT_URL`
    to the project link, e.g. `https://taiga.example.com/project/my-project`.
-2. Optionally set `TAIGA_POINTS` (default point value when a story has no `**Points:**`, empty = none) and
-   `STORIES_DIR` (default `stories`).
+2. Optionally set `STORIES_DIR` (default `stories`).
 
 `.env` holds no secrets and is ignored by git. The token **never** goes in it.
 
@@ -25,7 +24,12 @@ Each story is one `.md` file in `stories/`, following [story-template.md](story-
 - **File name:** lowercase, no accents, words with hyphens (`automatic-slug.md`).
 - **First line:** `# Story: <title>`. The text after "Story:" becomes the Taiga title.
   For bug fixes, use `Fix — <what was happening>`.
-- **Header:** `**Project:**`, `**Branch:**`, `**Version:**` and `**Date:**`, one per line.
+- **Header:** `**Project:**`, `**Branch:**`, `**Version:**`, `**Date:**` and `**Points:**`,
+  one per line.
+- **Points:** there is no default. **Before saving a new story to `stories/`, ask the user
+  its points** and write them in `**Points:**` (`**Pontos:**` in Portuguese). The value must
+  be a name in the project's point scale (e.g. 1, 2, 3, 5, 8, 13, 21). When writing several
+  stories, ask for all of them in one message, listing them by title.
 - **Sections, in this order:** `## User story` (**As** / **I want** / **so that**, each bold
   on its own line), `## Description` (prose for the product owner, no code jargon),
   `## Acceptance criteria` (`- [ ]` checklist, `[x]` for what is done and tested),
@@ -57,7 +61,8 @@ Check the format (no network, no token):
 python -X utf8 .claude/skills/taiga-stories/scripts/taiga_stories.py validate [file.md ...]
 ```
 
-Fix errors. Warnings (task without description) are acceptable.
+Fix errors. A task without description is an acceptable warning. A missing `**Points:**`
+is only a warning here, but it blocks the upload.
 
 ## Uploading to Taiga
 
@@ -69,13 +74,11 @@ Use AskUserQuestion, or a plain question if it is unavailable. Do not reuse earl
 2. **Session token:** in the open Taiga tab, F12 > Console >
    `localStorage.getItem("token")`. Use it only as an inline environment variable for
    the command. Never write it to `.env` or to any file.
-3. **Points of each story:** list the stories that will be uploaded by title, suggesting
-   the current `**Points:**` value (or `TAIGA_POINTS`), and ask for each one. With many
-   stories, one message with the whole list is fine ("reply with the changes, the rest
-   keep the suggestion"). Write each answer to the story's `**Points:**` header line
-   (`**Pontos:**` in Portuguese), adding the line after `**Date:**` / `**Período:**` if it
-   is missing. The value must be a name in the project's point scale. The upload stops
-   before creating anything if one is not.
+3. **Missing points:** if any story to upload has no `**Points:**` (the `--dry-run` shows
+   `MISSING`), ask the points of those stories, listing them by title. Write each answer
+   to the story's `**Points:**` line (`**Pontos:**` in Portuguese), right after
+   `**Date:**` / `**Período:**`. Stories that already have points are not asked again.
+   The upload stops before creating anything while any story lacks a valid value.
 
 If `.env` is missing, also ask for the Taiga project link and create `.env` from
 `.env.example`.
@@ -94,8 +97,8 @@ stories and tasks were created, plus any texts the script rewrote (and any task 
 description was dropped).
 
 Defaults: the token owner is the assignee of stories and tasks, statuses are the project
-defaults, and points come from each story's `**Points:**` field (else `TAIGA_POINTS`) on
-the project's computable role.
+defaults, and points come from each story's `**Points:**` field, on the project's
+computable role.
 
 The script:
 - skips stories whose **title already exists in the project**. Use `--force` only if the

@@ -54,15 +54,15 @@ stories/automatic-slug.md  ──►  Taiga user story #575  (21 pts · assigned
     3. **Update changelog...**
 ```
 
-| Markdown | Taiga |
-|---|---|
-| Text after `# Story:` | User story title |
-| Whole file minus the first line | User story description |
-| `N. **Title**` under `## Tasks` | Task title |
-| Indented lines below a task | Task description |
+| Markdown                            | Taiga                  |
+| ----------------------------------- | ---------------------- |
+| Text after `# Story:`             | User story title       |
+| Whole file minus the first line     | User story description |
+| `N. **Title**` under `## Tasks` | Task title             |
+| Indented lines below a task         | Task description       |
 
 - **Assignee.** The token owner, on the story and on every task.
-- **Points.** The story's `**Points:**` header field, else `TAIGA_POINTS`, on the project's computable role. With Claude Code, the agent asks the points of each story before uploading.
+- **Points.** The story's `**Points:**` header field, on the project's computable role. There is no default: a story without points is not uploaded. With Claude Code, the agent asks the points when it writes each story, and again before uploading if any are missing.
 - **Status.** The project defaults.
 
 ## Quick start
@@ -77,7 +77,6 @@ Set the project link in `.env`:
 
 ```ini
 TAIGA_PROJECT_URL=https://taiga.example.com/project/my-project
-TAIGA_POINTS=21
 STORIES_DIR=stories
 ```
 
@@ -97,16 +96,15 @@ TAIGA_TOKEN='<token>' python -X utf8 $S upload --sprint "Sprint 34"
 
 ## Commands
 
-| Command | What it does |
-|---|---|
-| `validate [file.md ...]` | Checks the format. No network, no token. Exits non-zero on errors. Warnings do not fail. |
-| `upload --sprint "<name>"` | Creates the stories and tasks in that sprint. The name must match Taiga exactly. |
-| `upload --backlog` | Creates them in the backlog. |
-| `--dry-run` | Lists what would be created, without calling the API. |
-| `--force` | Creates a story even when the title already exists in the project. |
-| `--points <value>` | Default points for stories without a `**Points:**` field, overriding `TAIGA_POINTS`. |
-| `--project-url <url>` | Overrides `TAIGA_PROJECT_URL` for this run. |
-| `--dir <path>` | Reads stories from another folder. |
+| Command                      | What it does                                                                             |
+| ---------------------------- | ---------------------------------------------------------------------------------------- |
+| `validate [file.md ...]`   | Checks the format. No network, no token. Exits non-zero on errors. Warnings do not fail. |
+| `upload --sprint "<name>"` | Creates the stories and tasks in that sprint. The name must match Taiga exactly.         |
+| `upload --backlog`         | Creates them in the backlog.                                                             |
+| `--dry-run`                | Lists what would be created, without calling the API.                                    |
+| `--force`                  | Creates a story even when the title already exists in the project.                       |
+| `--project-url <url>`      | Overrides `TAIGA_PROJECT_URL` for this run.                                            |
+| `--dir <path>`             | Reads stories from another folder.                                                       |
 
 File names at the end limit a run to those stories: `upload --backlog automatic-slug.md`.
 
@@ -182,10 +180,10 @@ Story files are git-ignored by default, because they often describe internal sys
 
 ## Troubleshooting
 
-| Symptom | Meaning |
-|---|---|
-| `403` with an HTML page ("Just a moment...") | The proxy's WAF blocked the text. The script retries with plainer text and lists what it changed. |
-| `403` with `PermissionDenied` | A Taiga permission error. Some roles cannot delete user stories, so check `--dry-run` before uploading. |
-| `Sprint "..." not found` | The name must match the sprint in Taiga exactly. |
-| `exists in project (#N), skipped` | A story with that title already exists. `--force` creates it anyway. |
-| Garbled accents on Windows | Run Python with `-X utf8`. |
+| Symptom                                        | Meaning                                                                                                   |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `403` with an HTML page ("Just a moment...") | The proxy's WAF blocked the text. The script retries with plainer text and lists what it changed.         |
+| `403` with `PermissionDenied`              | A Taiga permission error. Some roles cannot delete user stories, so check `--dry-run` before uploading. |
+| `Sprint "..." not found`                     | The name must match the sprint in Taiga exactly.                                                          |
+| `exists in project (#N), skipped`            | A story with that title already exists. `--force` creates it anyway.                                    |
+| Garbled accents on Windows                     | Run Python with `-X utf8`.                                                                              |

@@ -12,8 +12,9 @@ flags override it. The token is never read from .env: pass it per session in TAI
 Behaviour:
 - Assignee: the token owner (users/me), on the story and on every task.
 - Status: the project defaults (Taiga picks them).
-- Points: the story's **Points:** header field, else TAIGA_POINTS, on the project's
-  computable role (none if both are empty).
+- Points: the story's **Points:** header field, on the project's computable role.
+  There is no default. The upload stops before creating anything if a story has no
+  points or a value that is not in the project's point scale.
 - Idempotent: stories whose title already exists in the project are skipped, and an
   interrupted run resumes the same story instead of creating a duplicate
   (state in <stories dir>/.taiga_state.json).
@@ -124,6 +125,8 @@ def validate(path):
     if nums and nums != list(range(1, len(nums) + 1)):
         probs.append('task numbering must be continuous (1, 2, 3...) across groups')
     probs += ['warning: task without description: %s' % t['subject'] for t in tasks if not t['desc']]
+    if not story_points(path):
+        probs.append('warning: no **Points:** field (required to upload)')
     return probs
 
 # ---------------------------------------------------------------- api
@@ -201,7 +204,7 @@ def cmd_upload(a):
         print('Target: %s' % (a.sprint or 'backlog'))
         for f in files:
             t, _, ts = parse(f)
-            pts = story_points(f) or a.points or 'none'
+            pts = story_points(f) or 'MISSING'
             print('%s (%s pts, %d tasks)' % (t, pts, len(ts)))
             for x in ts:
                 print('   -', x['subject'])
@@ -220,18 +223,15 @@ def cmd_upload(a):
         milestone = next((m['id'] for m in api.raw('GET', '/milestones?project=%d' % pid) if m['name'] == a.sprint), None)
         if not milestone:
             sys.exit('Sprint "%s" not found in project %s.' % (a.sprint, slug))
-    # points: the story's **Points:** field, else --points / TAIGA_POINTS, else none
+    # points: the story's **Points:** field. No default.
     role = next((r['id'] for r in proj['roles'] if r['computable']), None)
     scale = {p['name']: p['id'] for p in proj['points']}
-    def points_for(f):
-        value = story_points(f) or a.points
-        if not value or role is None:
-            return None
-        if value not in scale:
-            sys.exit('%s: point value "%s" not in project scale %s' % (os.path.basename(f), value, list(scale)))
-        return {str(role): scale[value]}
-    for f in files:  # fail before creating anything
-        points_for(f)
+    points_for = lambda f: {str(role): scale[story_points(f)]} if role is not None else None
+    if role is not None:  # fail before creating anything
+        bad = ['%s (%s)' % (os.path.basename(f), story_points(f) or 'missing') for f in files
+               if story_points(f) not in scale]
+        if bad:
+            sys.exit('Set **Points:** to a value of the project scale %s in: %s' % (list(scale), ', '.join(bad)))
 
     state_path = os.path.join(a.dir, '.taiga_state.json')
     state = json.load(open(state_path, encoding='utf-8')) if os.path.exists(state_path) else {}
@@ -290,7 +290,6 @@ def main():
     u.add_argument('--project-url', default=env.get('TAIGA_PROJECT_URL', ''))
     u.add_argument('--sprint', help='exact sprint name, e.g. "Sprint 34"')
     u.add_argument('--backlog', action='store_true', help='leave stories in the backlog')
-    u.add_argument('--points', default=env.get('TAIGA_POINTS', ''), help='point value name, empty = none')
     u.add_argument('--dry-run', action='store_true', help='show what would be created')
     u.add_argument('--force', action='store_true', help='create even if the title already exists')
     u.add_argument('files', nargs='*')
